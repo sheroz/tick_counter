@@ -2,8 +2,8 @@
 
 ## Tested on platforms
 
-    x86_64 (Intel® Core™ i7)
     AArch64 (Apple Silicon M1 Pro)
+    x86_64 (Intel® Core™ i7)
 
 ## Sample usage
 
@@ -32,14 +32,30 @@
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
 
-### Sample output
+### Sample outputs
 
-### Platform
+#### 1. Macbook Pro 16 2021
 
-    Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
+    Apple M1 Pro
+    MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
+
+    Output:
+
+    Environment: macos/unix aarch64
+    Tick frequency, MHZ: 24
+    Tick frequency provided by: hardware
+    Tick accuracy, nanoseconds: 41.666666666666664
+    Tick counter start: 48031196281005
+    Tick counter stop: 48031220402058
+    Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
+    Elapsed nanoseconds according to elapsed ticks: 1005043875
+
+#### 2. Ubuntu 22.04 LTS
+
     Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+    Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
 
-#### Output
+    Output:
 
     Environment: linux/unix x86_64
     Tick frequency, MHZ: 3430.499961
