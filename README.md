@@ -2,8 +2,8 @@
 
 ## Tested on platforms
 
-    AArch64 (Apple Silicon M1 Pro)
     x86_64 (Intel® Core™ i7)
+    AArch64 (Apple Silicon M1 Pro)
 
 ## Sample usage
 
@@ -29,7 +29,7 @@
 
 ### Sample output
 
-#### Platform
+### Platform
 
     Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
     Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
@@ -37,9 +37,9 @@
 #### Output
 
     Environment: linux/unix x86_64
-    Estimated counter frequency, MHZ: 3430.141314
-    Expected counter accuracy, Nanoseconds: 0.29153317850740884
-    Counter start: 14286143200274
-    Counter stop: 14289573388952
-    Elapsed ticks count in ~1 second: 3430188678
-    Elapsed nanoseconds according to elapsed ticks: 1000013808.1774668
+    Estimated counter frequency, MHZ: 3430.471696
+    Expected counter accuracy, Nanoseconds: 0.29150510151884373
+    Counter start: 19297282189217
+    Counter stop: 19300712675274
+    Elapsed ticks count in ~1 second: 3430486057
+    Elapsed nanoseconds according to elapsed ticks: 1000004186.304763

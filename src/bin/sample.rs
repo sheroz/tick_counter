@@ -1,6 +1,6 @@
 use std::{thread, time};
 use std::env::consts;
-use cpu_counter::*;
+use cpu_tick_counter::*;
 
 fn main() {
     println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);

@@ -1,5 +1,5 @@
 [package]
-name = "cpu_counter"
+name = "cpu_tick_counter"
 version = "0.1.0"
 edition = "2021"
 
