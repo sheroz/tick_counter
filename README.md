@@ -2,7 +2,7 @@
 
 ## Tested on platforms
 
-    AArch64 (Apple Silicon M1 Pro)
+    AArch64 (Apple M1 Pro)
     x86_64 (Intel® Core™ i7)
 
 ## Sample usage
@@ -34,7 +34,7 @@
 
 ### Sample outputs
 
-#### 1. Macbook Pro 16 2021
+#### 1. Macbook Pro 16 2021 / Apple Silicon
 
     Apple M1 Pro
     MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
@@ -50,7 +50,7 @@
     Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
     Elapsed nanoseconds according to elapsed ticks: 1005043875
 
-#### 2. Ubuntu 22.04 LTS
+#### 2. Ubuntu 22.04 LTS / Intel® Core™ i7
 
     Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
     Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
