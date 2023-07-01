@@ -1,7 +1,10 @@
 use std::{thread, time};
+use std::env::consts;
 use cpu_counter::*;
 
 fn main() {
+    println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
+
     let counter_frequency = estimated_counter_frequency();
     println!("Estimated counter frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
 

@@ -1,6 +1,7 @@
 use std::arch::asm;
 
 #[cfg(target_arch = "x86_64")]
+#[inline]
 pub fn x86_64_tick_counter() -> u64 {
     let mut reg_eax: u32;
     let mut reg_edx: u32;
@@ -51,11 +52,13 @@ pub fn tick_counter_frequency() -> u64 {
 }
 
 #[cfg(not(target_arch = "aarch64"))]
+#[inline]
 pub fn tick_counter_frequency() -> u64 {
     estimated_counter_frequency()
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
 pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
     let mut reg_eax: u32;
     let mut reg_edx: u32;
@@ -69,6 +72,7 @@ pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[inline]
 pub fn tick_counter_start() -> u64 {
     let rax: u64;
     unsafe {
@@ -85,6 +89,7 @@ pub fn tick_counter_start() -> u64 {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[inline]
 pub fn tick_counter_stop() -> u64 {
     let rax: u64;
     unsafe {
@@ -113,14 +118,6 @@ pub fn estimated_counter_frequency() -> u64 {
 
 pub fn expected_counter_accuracy_nanoseconds(frequency: u64) -> f64{
     1.0e9_f64 / (frequency as f64)
-}
-
-#[allow(dead_code)]
-fn unsupported_architecture() {
-    panic!(
-        "\nError! Architecture found: {}\nCurrently, only x86_64 architecture is supported!",
-        std::env::consts::ARCH
-    );
 }
 
 #[cfg(test)]
