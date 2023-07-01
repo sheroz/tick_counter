@@ -214,6 +214,7 @@ mod tests {
     #[test]
     #[cfg(target_arch = "aarch64")]
     fn test_aarch64_counter_frequency() {
+        use super::*;
         let (counter_frequency, accuracy) = tick_counter_frequency();
         assert!(counter_frequency > 0);
         assert_eq!(accuracy, EstimationAccuracy::Hardware);
