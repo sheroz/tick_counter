@@ -19,6 +19,7 @@ fn main() {
 
     println!("Tick counter start: {}", counter_start);
     println!("Tick counter stop: {}", counter_stop);
+    
     let elapsed_ticks = counter_stop - counter_start;
     println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
 
