@@ -52,7 +52,7 @@ pub fn tick_counter_frequency() -> u64 {
 
 #[cfg(not(target_arch = "aarch64"))]
 pub fn tick_counter_frequency() -> u64 {
-    calculate_tick_counter_frequency()
+    estimated_counter_frequency()
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
@@ -99,17 +99,20 @@ pub fn tick_counter_stop() -> u64 {
     rax
 }
 
-#[allow(dead_code)]
-fn calculate_tick_counter_frequency() -> u64 {
+pub fn estimated_counter_frequency() -> u64 {
     use std::{thread, time};
 
-    const DURATION_IN_MILLISECONDS: u64 = 200;
+    const DURATION_IN_MILLISECONDS: u64 = 1000;
 
     let counter_start = tick_counter_start();
     thread::sleep(time::Duration::from_millis(DURATION_IN_MILLISECONDS));
     let counter_stop = tick_counter_stop();
 
     (counter_stop - counter_start) * (1000 / DURATION_IN_MILLISECONDS)
+}
+
+pub fn expected_counter_accuracy_nanoseconds(frequency: u64) -> f64{
+    1.0e9_f64 / (frequency as f64)
 }
 
 #[allow(dead_code)]
@@ -139,10 +142,10 @@ mod tests {
         assert!(counter_start < counter_stop);
 
         let counter_frequency = tick_counter_frequency();
-        println!("counter_frequency: {}", counter_frequency);
         assert!(counter_frequency > 0);
 
-        println!("calculated_counter_frequency: {}", calculate_tick_counter_frequency());
+        let counter_accuracy = expected_counter_accuracy_nanoseconds(counter_frequency);
+        assert!(counter_accuracy > 0.0);
     }
 
     #[test]
@@ -191,6 +194,12 @@ mod tests {
         assert!(cpu_core_id_1 == cpu_core_id_3);
         assert!(cpu_core_id_3 == cpu_core_id_4);
         assert!(diff_tick_asm_rdtscp > 0);
+
+        let counter_frequency = estimated_counter_frequency();
+        assert!(counter_frequency > 0);
+
+        let counter_accuracy = expected_counter_accuracy_nanoseconds(counter_frequency);
+        assert!(counter_accuracy > 0.0);
     }
 
     /// adding documentation
