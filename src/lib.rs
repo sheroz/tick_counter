@@ -1,5 +1,13 @@
 use std::arch::asm;
 
+#[derive(Debug, PartialEq)]
+pub enum EstimationAccuracy {
+    Low,
+    Medium,
+    High,
+    Hardware
+}
+
 #[cfg(target_arch = "x86_64")]
 #[inline]
 pub fn x86_64_tick_counter() -> u64 {
@@ -40,7 +48,7 @@ pub fn tick_counter_stop() -> u64 {
 
 #[cfg(target_arch = "aarch64")]
 #[inline]
-pub fn tick_counter_frequency() -> u64 {
+pub fn tick_counter_frequency() -> (u64, EstimationAccuracy) {
     let counter_frequency: u64;
     unsafe {
         asm!(
@@ -48,13 +56,14 @@ pub fn tick_counter_frequency() -> u64 {
             out("x0") counter_frequency
         );
     }
-    counter_frequency
+    (counter_frequency, EstimationAccuracy::Hardware)
 }
 
-#[cfg(not(target_arch = "aarch64"))]
+#[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn tick_counter_frequency() -> u64 {
-    estimated_counter_frequency()
+pub fn tick_counter_frequency() -> (u64, EstimationAccuracy)  {
+    let accuracy = EstimationAccuracy::Medium;
+    (measure_tick_counter_frequency(&accuracy), accuracy)
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
@@ -104,19 +113,25 @@ pub fn tick_counter_stop() -> u64 {
     rax
 }
 
-pub fn estimated_counter_frequency() -> u64 {
+#[cfg(target_arch = "x86_64")]
+pub fn measure_tick_counter_frequency(accuracy: &EstimationAccuracy) -> u64 {
     use std::{thread, time};
 
-    const DURATION_IN_MILLISECONDS: u64 = 1000;
+    let measure_duration_milliseconds = match accuracy {
+        EstimationAccuracy::Low => 100,
+        EstimationAccuracy::Medium => 1000,
+        EstimationAccuracy::High => 10000,
+        EstimationAccuracy::Hardware => panic!("Illegal argument!")
+    };
 
     let counter_start = tick_counter_start();
-    thread::sleep(time::Duration::from_millis(DURATION_IN_MILLISECONDS));
+    thread::sleep(time::Duration::from_millis(measure_duration_milliseconds));
     let counter_stop = tick_counter_stop();
 
-    (counter_stop - counter_start) * (1000 / DURATION_IN_MILLISECONDS)
+    (counter_stop - counter_start) * 1000 / measure_duration_milliseconds
 }
 
-pub fn expected_counter_accuracy_nanoseconds(frequency: u64) -> f64{
+pub fn tick_counter_accuracy_nanoseconds(frequency: u64) -> f64{
     1.0e9_f64 / (frequency as f64)
 }
 
@@ -137,12 +152,6 @@ mod tests {
             counter_start, counter_stop
         );
         assert!(counter_start < counter_stop);
-
-        let counter_frequency = tick_counter_frequency();
-        assert!(counter_frequency > 0);
-
-        let counter_accuracy = expected_counter_accuracy_nanoseconds(counter_frequency);
-        assert!(counter_accuracy > 0.0);
     }
 
     #[test]
@@ -191,12 +200,32 @@ mod tests {
         assert!(cpu_core_id_1 == cpu_core_id_3);
         assert!(cpu_core_id_3 == cpu_core_id_4);
         assert!(diff_tick_asm_rdtscp > 0);
+    }
 
-        let counter_frequency = estimated_counter_frequency();
+    #[test]
+    #[cfg(target_arch = "x86_64")]
+    fn test_x86_64_counter_frequency() {
+        use super::*;
+        let (counter_frequency, accuracy) = tick_counter_frequency();
         assert!(counter_frequency > 0);
+        assert_eq!(accuracy, EstimationAccuracy::Medium);
+    }
 
-        let counter_accuracy = expected_counter_accuracy_nanoseconds(counter_frequency);
-        assert!(counter_accuracy > 0.0);
+    #[test]
+    #[cfg(target_arch = "aarch64")]
+    fn test_aarch64_counter_frequency() {
+        let (counter_frequency, accuracy) = tick_counter_frequency();
+        assert!(counter_frequency > 0);
+        assert_eq!(accuracy, EstimationAccuracy::Hardware);
+    }
+
+    #[test]
+    #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
+    fn test_counter_accuracy() {
+        use super::*;
+        let counter_frequency = 24_000_000;
+        let counter_accuracy = tick_counter_accuracy_nanoseconds(counter_frequency);
+        assert_eq!((counter_accuracy as u64), 41);
     }
 
     /// adding documentation
