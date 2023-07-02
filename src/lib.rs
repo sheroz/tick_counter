@@ -1,5 +1,9 @@
-use std::{thread, time::Duration, arch::asm};
+use std::{time::Duration, arch::asm};
 
+#[allow(unused_imports)]
+use std::thread;
+
+#[allow(dead_code)]
 const DEFAULT_MEASURE_DURATION: Duration = Duration::from_millis(1000);
 
 #[derive(Debug, PartialEq)]
