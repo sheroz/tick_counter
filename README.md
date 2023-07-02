@@ -58,10 +58,10 @@
     Output:
 
     Environment: linux/unix x86_64
-    Tick frequency, MHZ: 3430.499961
-    Tick frequency provided by: software estimated
-    Tick accuracy, nanoseconds: 0.2915026997139208
-    Tick counter start: 42091578596094
-    Tick counter stop: 42095009119616
-    Elapsed ticks count in ~1 seconds thread::sleep(): 3430523522
-    Elapsed nanoseconds according to elapsed ticks: 1000006868.0951079
+    Tick frequency, MHZ: 3430.481526
+    Tick frequency is provided by: software, estimated in 1s
+    Tick accuracy, nanoseconds: 0.29150426621478326
+    Tick counter start: 9639567570396
+    Tick counter stop: 9642998073707
+    Elapsed ticks count in ~1 seconds thread::sleep(): 3430503311
+    Elapsed nanoseconds according to elapsed ticks: 1000006350.4204394

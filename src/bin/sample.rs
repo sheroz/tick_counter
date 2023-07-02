@@ -7,10 +7,13 @@ fn main() {
 
     let (counter_frequency, accuracy) = tick_counter_frequency();
     println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
-    let estimation_source = match accuracy {EstimationAccuracy::Hardware => "hardware", _ => "software estimated"};
-    println!("Tick frequency provided by: {}", estimation_source);
+    let estimation_source = match accuracy {
+        TickCounterFrequencyBase::Hardware => "hardware".to_string(),
+        TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
+    };
+    println!("Tick frequency is provided by: {}", estimation_source);
 
-    let counter_accuracy = tick_counter_accuracy_nanoseconds(counter_frequency);
+    let counter_accuracy = tick_counter_precision_nanoseconds(counter_frequency);
     println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
 
     let counter_start = tick_counter_start();
