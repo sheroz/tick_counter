@@ -1,9 +1,15 @@
-# CPU-based hardware tick counters for nanoseconds resolution benchmarks
+# CPU-based hardware tick counters for high-precision benchmarks
+
+## Uses built-in hardware tick counters
+
+x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the timestamp register.
+
+AArch64: reads value of the [CNTFRQ_EL0](https://developer.arm.com/documentation/ddi0601/2020-12/AArch64-Registers/CNTFRQ-EL0--Counter-timer-Frequency-register) counter-timer frequency register.
 
 ## Tested on platforms
 
-    AArch64 (Apple M1 Pro)
     x86_64 (Intel® Core™ i7)
+    AArch64 (Apple M1 Pro)
 
 ## Sample usage
 
