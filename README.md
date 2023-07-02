@@ -46,7 +46,7 @@
 
     Environment: macos/unix aarch64
     Tick frequency, MHZ: 24
-    Tick frequency provided by: hardware
+    Tick frequency is provided by: hardware
     Tick accuracy, nanoseconds: 41.666666666666664
     Tick counter start: 48031196281005
     Tick counter stop: 48031220402058
