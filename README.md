@@ -1,6 +1,4 @@
-# CPU-based hardware tick counters for high-precision benchmarks
-
-## Uses built-in hardware tick counters
+# Hardware-based tick counters for high-precision benchmarks
 
 x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the timestamp register.
 
