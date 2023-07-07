@@ -50,7 +50,7 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
 
-### Sample outputs
+### Outputs
 
 #### 1. Macbook Pro 16 2021 / Apple Silicon
 
