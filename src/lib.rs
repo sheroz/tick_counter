@@ -1,12 +1,5 @@
 use std::{time::Duration, arch::asm};
 
-#[allow(unused_imports)]
-use std::thread;
-
-#[allow(dead_code)]
-const DEFAULT_MEASURE_DURATION: Duration = Duration::from_millis(1000);
-
-#[derive(Debug, PartialEq)]
 pub enum TickCounterFrequencyBase {
     Hardware,
     Measured(Duration)
@@ -65,7 +58,8 @@ pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
 
 #[cfg(target_arch = "x86_64")]
 pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
-    let frequency_base = TickCounterFrequencyBase::Measured(DEFAULT_MEASURE_DURATION);
+    let measure_duration = Duration::from_millis(1000);
+    let frequency_base = TickCounterFrequencyBase::Measured(measure_duration);
     (measure_tick_counter_frequency(&frequency_base), frequency_base)
 }
 
@@ -118,9 +112,11 @@ pub fn tick_counter_stop() -> u64 {
 
 #[cfg(target_arch = "x86_64")]
 pub fn measure_tick_counter_frequency(accuracy: &TickCounterFrequencyBase) -> u64 {
+    use std::thread;
+
     let measure_duration = match accuracy {
         TickCounterFrequencyBase::Measured(duration) => duration,
-        TickCounterFrequencyBase::Hardware => panic!("Illegal argument!")
+        TickCounterFrequencyBase::Hardware => panic!("Hardware frequency is not provided in x86_64 platfrom.")
     };
 
     let counter_start = tick_counter_start();
@@ -135,11 +131,11 @@ pub fn tick_counter_precision_nanoseconds(frequency: u64) -> f64{
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
     #[cfg(target_arch = "aarch64")]
     fn test_aarch64_tick_counter() {
-        use super::*;
         use std::{thread, time};
 
         let counter_start = tick_counter_start();
@@ -155,7 +151,6 @@ mod tests {
     #[test]
     #[cfg(target_arch = "x86_64")]
     fn test_x86_64_counters() {
-        use super::*;
         use core::arch::x86_64::__rdtscp;
         use core::arch::x86_64::_rdtsc;
 
@@ -203,16 +198,25 @@ mod tests {
     #[test]
     #[cfg(target_arch = "x86_64")]
     fn test_x86_64_counter_frequency() {
-        use super::*;
         let (counter_frequency, frequency_base) = tick_counter_frequency();
         assert!(counter_frequency > 0);
-        assert_eq!(frequency_base, TickCounterFrequencyBase::Measured(DEFAULT_MEASURE_DURATION));
+        let estimated_duration = match frequency_base {
+            TickCounterFrequencyBase::Hardware => None,
+            TickCounterFrequencyBase::Measured(duration) => Some(duration)
+        };
+        assert_eq!(estimated_duration, Some(Duration::from_millis(1000)));
+    }
+
+    #[test]
+    #[cfg(target_arch = "x86_64")]
+    #[should_panic(expected = "Hardware frequency is not provided in x86_64 platfrom.")]
+    fn test_x86_64_measure_tick_counter_frequency() {
+        measure_tick_counter_frequency(&TickCounterFrequencyBase::Hardware);
     }
 
     #[test]
     #[cfg(target_arch = "aarch64")]
     fn test_aarch64_counter_frequency() {
-        use super::*;
         let (counter_frequency, frequency_base) = tick_counter_frequency();
         assert!(counter_frequency > 0);
         assert_eq!(frequency_base, TickCounterFrequencyBase::Hardware);
@@ -221,26 +225,8 @@ mod tests {
     #[test]
     #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
     fn test_counter_accuracy() {
-        use super::*;
         let counter_frequency = 24_000_000;
         let counter_accuracy = tick_counter_precision_nanoseconds(counter_frequency);
         assert_eq!((counter_accuracy as u64), 41);
-    }
-
-    /// adding documentation
-    /// test_asm1: using the inline assembly feature
-    #[test]
-    #[cfg(target_arch = "x86_64")]
-    fn test_asm_x86_64() {
-        use std::arch::asm;
-
-        let i: u64 = 3;
-        let mut o: u64 = 1;
-        assert_eq!(o, 1);
-        assert_ne!(o, i);
-        unsafe {
-            asm!("mov {0}, {1}", out(reg) o, in(reg) i);
-        }
-        assert_eq!(o, i);
     }
 }

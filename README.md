@@ -13,6 +13,9 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
 
 ### Please look at src/bin/sample.rs
 
+    use std::{thread, time, env::consts};
+    use tick_counter::*;
+
     println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter_frequency();

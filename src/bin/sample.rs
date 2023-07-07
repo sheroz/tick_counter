@@ -1,6 +1,5 @@
-use std::{thread, time};
-use std::env::consts;
-use cpu_tick_counter::*;
+use std::{thread, time, env::consts};
+use tick_counter::*;
 
 fn main() {
     println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
@@ -28,4 +27,13 @@ fn main() {
 
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_main() {
+        super::main();
+    }
 }
