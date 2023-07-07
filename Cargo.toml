@@ -1,10 +1,9 @@
 [package]
 name = "tick_counter"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Sheroz Khaydarov"]
 description = "Hardware-based tick counters for high-precision benchmarks"
 readme = "README.md"
 repository = "https://github.com/sheroz/tick_counter"
 license = "MIT"
-license-file = "LICENSE.txt"

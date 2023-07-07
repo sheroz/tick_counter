@@ -11,6 +11,14 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
 
 ## Sample usage
 
+    use tick_counter::*;
+
+    let tick_start = tick_counter_start();
+    // ... code lines to benchmark
+    let elapsed_ticks = tick_counter_stop() - tick_start;
+    
+    println!("elapsed ticks: {}", elapsed_ticks);
+
 ### Please look at src/bin/sample.rs
 
     use std::{thread, time, env::consts};
