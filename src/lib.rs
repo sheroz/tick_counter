@@ -1,23 +1,28 @@
+//!# Hardware-based tick counters for high-precision benchmarks
+//! * `x86_64`  - executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
+//! * `AArch64` - reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation/ddi0595/2021-12/AArch64-Registers/CNTVCT-EL0--Counter-timer-Virtual-Count-register) counter-timer register.
+//! 
+//! ## Basic usage
+//! 
+//!     use tick_counter::*;
+//!     let start = tick_counter_start();
+//!     // ... lines of code to benchmark
+//!     let elapsed_ticks = tick_counter_stop() - start;
+//!     println!("Number of elapsed ticks: {}", elapsed_ticks);
+//! 
+
 use std::{time::Duration, arch::asm};
 
+/// Enum for determining the base of the privided counter frequency
 pub enum TickCounterFrequencyBase {
+    /// Frequency is provided by hardware
     Hardware,
+
+    /// Frequency is measured by counting number of ticks in 'Duration' of time
     Measured(Duration)
 }
 
-#[cfg(target_arch = "x86_64")]
-#[inline]
-pub fn x86_64_tick_counter() -> u64 {
-    let mut reg_eax: u32;
-    let mut reg_edx: u32;
-
-    unsafe {
-        asm!("rdtsc", out("eax") reg_eax, out("edx") reg_edx);
-    }
-
-    (reg_edx as u64) << 32 | reg_eax as u64
-}
-
+/// Returns a current value of tick counter on `aarch64` architecture
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn aarch64_tick_counter() -> u64 {
@@ -31,18 +36,23 @@ pub fn aarch64_tick_counter() -> u64 {
     tick_counter
 }
 
+/// Returns a current value of the tick counter to use as a staring point
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn tick_counter_start() -> u64 {
     aarch64_tick_counter()
 }
 
+/// Returns a current value of the tick counter to use as a stopping point
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn tick_counter_stop() -> u64 {
     aarch64_tick_counter()
 }
 
+/// Returns a value of tick counter frequency
+/// * Returns a hardware based value of tick counter frequency on `aarch64` architecture
+/// * Returns a softeare measured value of tick counter frequency on `x86_64` architecture. Measurement duration time is 1 seconds
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
@@ -56,13 +66,39 @@ pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
     (counter_frequency, TickCounterFrequencyBase::Hardware)
 }
 
+/// Returns a value of tick counter frequency
+/// * Returns a hardware based value of tick counter frequency on `aarch64` architecture
+/// * Returns a softeare measured value of tick counter frequency on `x86_64` architecture. Measurement duration time is 1 seconds
 #[cfg(target_arch = "x86_64")]
 pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
-    let measure_duration = Duration::from_millis(1000);
+    let measure_duration = Duration::from_secs(1);
     let frequency_base = TickCounterFrequencyBase::Measured(measure_duration);
-    (measure_tick_counter_frequency(&frequency_base), frequency_base)
+    (x86_64_measure_tick_counter_frequency(&measure_duration), frequency_base)
 }
 
+/// Returns a current value of the tick counter based on Intel CPU's RDTSC instruction
+/// 
+/// This function is an aternative to Rust's core functions:
+/// * core::arch::x86::_rdtsc()
+/// * core::arch::x86_64::_rdtsc()
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+pub fn x86_64_tick_counter() -> u64 {
+    let mut reg_eax: u32;
+    let mut reg_edx: u32;
+
+    unsafe {
+        asm!("rdtsc", out("eax") reg_eax, out("edx") reg_edx);
+    }
+
+    (reg_edx as u64) << 32 | reg_eax as u64
+}
+
+/// Returns a tick counter and CPUID values based on Intel CPU's RDTSCP instruction
+/// 
+/// This function is an aternative to Rust's core functions:
+/// * core::arch::x86::_rdtscp()
+/// * core::arch::x86_64::_rdtscp()
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[inline]
 pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
@@ -77,6 +113,7 @@ pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
     ((reg_edx as u64) << 32 | reg_eax as u64, reg_ecx)
 }
 
+/// Returns a current value of the tick counter to use as a staring point
 #[cfg(target_arch = "x86_64")]
 #[inline]
 pub fn tick_counter_start() -> u64 {
@@ -94,6 +131,7 @@ pub fn tick_counter_start() -> u64 {
     rax
 }
 
+/// Returns a current value of the tick counter to use as a stopping point
 #[cfg(target_arch = "x86_64")]
 #[inline]
 pub fn tick_counter_stop() -> u64 {
@@ -110,21 +148,21 @@ pub fn tick_counter_stop() -> u64 {
     rax
 }
 
+/// Returns a measured value of tick counter frequency on `x86_64` architecture
+/// 
+/// # Arguments
+///
+/// * `measure_duration` - A reference to `Duration` value 
 #[cfg(target_arch = "x86_64")]
-pub fn measure_tick_counter_frequency(accuracy: &TickCounterFrequencyBase) -> u64 {
+pub fn x86_64_measure_tick_counter_frequency(measure_duration: &Duration) -> u64 {
     use std::thread;
-
-    let measure_duration = match accuracy {
-        TickCounterFrequencyBase::Measured(duration) => duration,
-        TickCounterFrequencyBase::Hardware => panic!("Hardware frequency is not provided in x86_64 platfrom.")
-    };
-
     let counter_start = tick_counter_start();
     thread::sleep(*measure_duration);
     let counter_stop = tick_counter_stop();
     (((counter_stop - counter_start) as f64) / measure_duration.as_secs_f64()) as u64
 }
 
+/// Returns a precision of tick counters in nanoseconds
 pub fn tick_counter_precision_nanoseconds(frequency: u64) -> f64{
     1.0e9_f64 / (frequency as f64)
 }
@@ -132,6 +170,15 @@ pub fn tick_counter_precision_nanoseconds(frequency: u64) -> f64{
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn basic_usage() {
+        use std::{thread, time};
+        let start = tick_counter_start();
+        thread::sleep(time::Duration::from_millis(20));
+        let elapsed_ticks = tick_counter_stop() - start;
+        assert!(elapsed_ticks > 0);
+    }
 
     #[test]
     #[cfg(target_arch = "aarch64")]
@@ -205,13 +252,6 @@ mod tests {
             TickCounterFrequencyBase::Measured(duration) => Some(duration)
         };
         assert_eq!(estimated_duration, Some(Duration::from_millis(1000)));
-    }
-
-    #[test]
-    #[cfg(target_arch = "x86_64")]
-    #[should_panic(expected = "Hardware frequency is not provided in x86_64 platfrom.")]
-    fn test_x86_64_measure_tick_counter_frequency() {
-        measure_tick_counter_frequency(&TickCounterFrequencyBase::Hardware);
     }
 
     #[test]

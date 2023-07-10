@@ -1,9 +1,11 @@
 [package]
 name = "tick_counter"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Sheroz Khaydarov"]
 description = "Hardware-based tick counters for high-precision benchmarks"
+documentation = "https://docs.rs/tick_counter"
 readme = "README.md"
 repository = "https://github.com/sheroz/tick_counter"
 license = "MIT"
+keywords = ["tick", "tick counter", "benchmark", "rdtsc", "rdtscp", "cntvct_el0", "cntfrq_el0"]

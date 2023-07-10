@@ -2,7 +2,23 @@ use std::{thread, time, env::consts};
 use tick_counter::*;
 
 fn main() {
-    println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
+    println!("Output of basic usage:");
+    basic_usage(); 
+
+    println!("Output of sample usage:");
+    sample_usage();
+}
+
+fn basic_usage() {
+    let duration = time::Duration::from_millis(20); 
+    let start = tick_counter_start();
+    thread::sleep(duration);
+    let elapsed_ticks = tick_counter_stop() - start;
+    println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
+}
+
+fn sample_usage() {
+    println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter_frequency();
     println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
@@ -31,9 +47,18 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-
     #[test]
     fn test_main() {
         super::main();
+    }
+
+    #[test]
+    fn basic_usage() {
+        super::basic_usage();
+    }
+
+    #[test]
+    fn sample_usage() {
+        super::sample_usage();
     }
 }

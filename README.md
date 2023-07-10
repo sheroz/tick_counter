@@ -1,6 +1,6 @@
 # Hardware-based tick counters for high-precision benchmarks
 
-x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the timestamp register.
+x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
 
 AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation/ddi0595/2021-12/AArch64-Registers/CNTVCT-EL0--Counter-timer-Virtual-Count-register) counter-timer register.
 
@@ -9,17 +9,15 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
     x86_64 (Intel® Core™ i7)
     AArch64 (Apple M1 Pro)
 
-## Sample usage
+## Basic usage
 
     use tick_counter::*;
+    let start = tick_counter_start();
+    // ... lines of code to benchmark
+    let elapsed_ticks = tick_counter_stop() - start;
+    println!("Number of elapsed ticks: {}", elapsed_ticks);
 
-    let tick_start = tick_counter_start();
-    // ... code lines to benchmark
-    let elapsed_ticks = tick_counter_stop() - tick_start;
-    
-    println!("elapsed ticks: {}", elapsed_ticks);
-
-### Please look at src/bin/sample.rs
+### Sample usage, please look at [src/bin/sample.rs](src/bin/sample.rs)
 
     use std::{thread, time, env::consts};
     use tick_counter::*;
