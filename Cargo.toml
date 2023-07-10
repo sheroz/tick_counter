@@ -8,4 +8,4 @@ documentation = "https://docs.rs/tick_counter"
 readme = "README.md"
 repository = "https://github.com/sheroz/tick_counter"
 license = "MIT"
-keywords = ["tick", "tick counter", "benchmark", "rdtsc", "rdtscp", "cntvct_el0", "cntfrq_el0"]
+keywords = ["tick", "counter", "benchmark", "rdtsc", "rdtscp", "cntvct_el0", "cntfrq_el0"]
