@@ -9,7 +9,9 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
     x86_64 (Intel® Core™ i7)
     AArch64 (Apple M1 Pro)
 
-## Basic usage
+## For usage samples please look at [src/bin/sample.rs](src/bin/sample.rs)
+
+### Basic usage
 
     use tick_counter::*;
     let start = tick_counter_start();
@@ -17,7 +19,7 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
     let elapsed_ticks = tick_counter_stop() - start;
     println!("Number of elapsed ticks: {}", elapsed_ticks);
 
-### Sample usage, please look at [src/bin/sample.rs](src/bin/sample.rs)
+### Sample usage
 
     use std::{thread, time, env::consts};
     use tick_counter::*;
