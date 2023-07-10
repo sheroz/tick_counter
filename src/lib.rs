@@ -18,7 +18,7 @@ pub enum TickCounterFrequencyBase {
     /// Frequency is provided by hardware
     Hardware,
 
-    /// Frequency is measured by counting number of ticks in 'Duration' of time
+    /// Frequency is measured by counting number of ticks in `Duration` of time
     Measured(Duration)
 }
 
@@ -259,7 +259,10 @@ mod tests {
     fn test_aarch64_counter_frequency() {
         let (counter_frequency, frequency_base) = tick_counter_frequency();
         assert!(counter_frequency > 0);
-        assert_eq!(frequency_base, TickCounterFrequencyBase::Hardware);
+        match frequency_base   {
+            TickCounterFrequencyBase::Hardware => (),
+            _ => panic!("Unexpected frequency base!")
+        }
     }
 
     #[test]
