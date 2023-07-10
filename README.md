@@ -3,7 +3,6 @@
 ![Crates.io](https://img.shields.io/crates/v/tick_counter)
 ![docs.rs](https://img.shields.io/docsrs/tick_counter)
 ![build & test](https://github.com/sheroz/tick_counter/actions/workflows/ci.yml/badge.svg)
-![maintenance-status](https://img.shields.io/badge/maintenance-actively--developed-brightgreen.svg)
 ![GitHub](https://img.shields.io/github/license/sheroz/tick_counter)
 
 x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
