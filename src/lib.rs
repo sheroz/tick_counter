@@ -66,9 +66,9 @@ pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
     (counter_frequency, TickCounterFrequencyBase::Hardware)
 }
 
-/// Returns a value of tick counter frequency
-/// * Returns a hardware based value of tick counter frequency on `aarch64` architecture
-/// * Returns a softeare measured value of tick counter frequency on `x86_64` architecture. Measurement duration time is 1 seconds
+/// Returns frequency of tick counter in HZ.
+/// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
+/// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
 #[cfg(target_arch = "x86_64")]
 pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
     let measure_duration = Duration::from_secs(1);
@@ -76,11 +76,11 @@ pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
     (x86_64_measure_tick_counter_frequency(&measure_duration), frequency_base)
 }
 
-/// Returns a current value of the tick counter based on Intel CPU's RDTSC instruction
+/// Returns a current value of the tick counter based on Intel CPU's `RDTSC` instruction
 /// 
 /// This function is an aternative to Rust's core functions:
-/// * core::arch::x86::_rdtsc()
-/// * core::arch::x86_64::_rdtsc()
+/// * `core::arch::x86::_rdtsc()`
+/// * `core::arch::x86_64::_rdtsc()`
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[inline]
 pub fn x86_64_tick_counter() -> u64 {
@@ -94,11 +94,11 @@ pub fn x86_64_tick_counter() -> u64 {
     (reg_edx as u64) << 32 | reg_eax as u64
 }
 
-/// Returns a tick counter and CPUID values based on Intel CPU's RDTSCP instruction
+/// Returns a tick counter and CPUID values based on Intel CPU's `RDTSCP` instruction
 /// 
 /// This function is an aternative to Rust's core functions:
-/// * core::arch::x86::_rdtscp()
-/// * core::arch::x86_64::_rdtscp()
+/// * `core::arch::x86::_rdtscp()`
+/// * `core::arch::x86_64::_rdtscp()`
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[inline]
 pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
