@@ -1,9 +1,9 @@
 # Hardware-based tick counters for high-precision benchmarks
 
-<a href="https://img.shields.io/crates/v/tick_counter" target="_blank"><img src="https://img.shields.io/crates/v/tick_counter"/></a>
-<a href="https://img.shields.io/docsrs/tick_counter" target="_blank"><img src="https://img.shields.io/docsrs/tick_counter"/></a>
-<a href="https://github.com/sheroz/tick_counter/actions/workflows/ci.yml/badge.svg" target="_blank"><img src="https://github.com/sheroz/tick_counter/actions/workflows/ci.yml/badge.svg"/></a>
-<a href="https://img.shields.io/github/license/sheroz/tick_counter" target="_blank"><img src="https://img.shields.io/github/license/sheroz/tick_counter"/></a>
+<a href="https://crates.io/crates/tick_counter" target="_blank"><img src="https://img.shields.io/crates/v/tick_counter"/></a>
+<a href="https://docs.rs/tick_counter/latest/tick_counter/" target="_blank"><img src="https://img.shields.io/docsrs/tick_counter"/></a>
+<a href="https://github.com/sheroz/tick_counter/actions/workflows/ci.yml" target="_blank"><img src="https://github.com/sheroz/tick_counter/actions/workflows/ci.yml/badge.svg"/></a>
+<a href="https://github.com/sheroz/tick_counter/blob/main/LICENSE.txt" target="_blank"><img src="https://img.shields.io/github/license/sheroz/tick_counter"/></a>
 
 x86_64: executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
 
