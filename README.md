@@ -20,33 +20,31 @@ For usage samples please look at [src/bin/sample.rs](src/bin/sample.rs)
 
 ### Basic usage
 
-    use tick_counter::*;
-    let start = tick_counter_start();
+    let start = tick_counter::start();
     // ... lines of code to benchmark
-    let elapsed_ticks = tick_counter_stop() - start;
+    let elapsed_ticks = tick_counter::stop() - start;
     println!("Number of elapsed ticks: {}", elapsed_ticks);
 
 ### Sample usage
 
     use std::{thread, time, env::consts};
-    use tick_counter::*;
 
-    println!("\nEnvironment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
+    println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
-    let (counter_frequency, accuracy) = tick_counter_frequency();
+    let (counter_frequency, accuracy) = tick_counter::frequency();
     println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
     let estimation_source = match accuracy {
-        TickCounterFrequencyBase::Hardware => "hardware".to_string(),
-        TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
+        tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
+        tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
     };
     println!("Tick frequency is provided by: {}", estimation_source);
 
-    let counter_accuracy = tick_counter_precision_nanoseconds(counter_frequency);
+    let counter_accuracy = tick_counter::precision(counter_frequency);
     println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
 
-    let counter_start = tick_counter_start();
+    let counter_start = tick_counter::start();
     thread::sleep(time::Duration::from_secs(1));
-    let counter_stop = tick_counter_stop();
+    let counter_stop = tick_counter::stop();
 
     println!("Tick counter start: {}", counter_start);
     println!("Tick counter stop: {}", counter_stop);
