@@ -1,6 +1,6 @@
 [package]
 name = "tick_counter"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 authors = ["Sheroz Khaydarov"]
 description = "Hardware-based tick counters for high-precision benchmarks"

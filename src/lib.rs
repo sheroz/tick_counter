@@ -1,15 +1,13 @@
-//!# Hardware-based tick counters for high-precision benchmarks
+//! # Hardware-based tick counters for high-precision benchmarks
 //! * `x86_64`  - executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
 //! * `AArch64` - reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation/ddi0595/2021-12/AArch64-Registers/CNTVCT-EL0--Counter-timer-Virtual-Count-register) counter-timer register.
 //! 
 //! ## Basic usage
 //! 
-//!     use tick_counter::*;
-//!     let start = tick_counter_start();
+//!     let start = tick_counter::start();
 //!     // ... lines of code to benchmark
-//!     let elapsed_ticks = tick_counter_stop() - start;
+//!     let elapsed_ticks = tick_counter::stop() - start;
 //!     println!("Number of elapsed ticks: {}", elapsed_ticks);
-//! 
 
 use std::{time::Duration, arch::asm};
 
@@ -39,23 +37,23 @@ pub fn aarch64_tick_counter() -> u64 {
 /// Returns a current value of the tick counter to use as a staring point
 #[cfg(target_arch = "aarch64")]
 #[inline]
-pub fn tick_counter_start() -> u64 {
+pub fn start() -> u64 {
     aarch64_tick_counter()
 }
 
 /// Returns a current value of the tick counter to use as a stopping point
 #[cfg(target_arch = "aarch64")]
 #[inline]
-pub fn tick_counter_stop() -> u64 {
+pub fn stop() -> u64 {
     aarch64_tick_counter()
 }
 
-/// Returns a value of tick counter frequency
-/// * Returns a hardware based value of tick counter frequency on `aarch64` architecture
-/// * Returns a softeare measured value of tick counter frequency on `x86_64` architecture. Measurement duration time is 1 seconds
+/// Returns a frequency of tick counter in hertz (Hz).
+/// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
+/// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
 #[cfg(target_arch = "aarch64")]
 #[inline]
-pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
+pub fn frequency() -> (u64, TickCounterFrequencyBase) {
     let counter_frequency: u64;
     unsafe {
         asm!(
@@ -66,14 +64,14 @@ pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
     (counter_frequency, TickCounterFrequencyBase::Hardware)
 }
 
-/// Returns frequency of tick counter in HZ.
+/// Returns a frequency of tick counter in hertz (Hz).
 /// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
 /// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
 #[cfg(target_arch = "x86_64")]
-pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
+pub fn frequency() -> (u64, TickCounterFrequencyBase)  {
     let measure_duration = Duration::from_secs(1);
     let frequency_base = TickCounterFrequencyBase::Measured(measure_duration);
-    (x86_64_measure_tick_counter_frequency(&measure_duration), frequency_base)
+    (x86_64_measure_frequency(&measure_duration), frequency_base)
 }
 
 /// Returns a current value of the tick counter based on Intel CPU's `RDTSC` instruction
@@ -101,7 +99,7 @@ pub fn x86_64_tick_counter() -> u64 {
 /// * `core::arch::x86_64::_rdtscp()`
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #[inline]
-pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
+pub fn x86_64_processor_id() -> (u64, u32) {
     let mut reg_eax: u32;
     let mut reg_edx: u32;
     let mut reg_ecx: u32;
@@ -116,7 +114,7 @@ pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
 /// Returns a current value of the tick counter to use as a staring point
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn tick_counter_start() -> u64 {
+pub fn start() -> u64 {
     let rax: u64;
     unsafe {
         asm!(
@@ -134,7 +132,7 @@ pub fn tick_counter_start() -> u64 {
 /// Returns a current value of the tick counter to use as a stopping point
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn tick_counter_stop() -> u64 {
+pub fn stop() -> u64 {
     let rax: u64;
     unsafe {
         asm!(
@@ -148,23 +146,103 @@ pub fn tick_counter_stop() -> u64 {
     rax
 }
 
-/// Returns a measured value of tick counter frequency on `x86_64` architecture
+/// Returns a measured value of tick counter frequency on `x86_64` architecture in hertz (Hz).
 /// 
 /// # Arguments
 ///
 /// * `measure_duration` - A reference to `Duration` value 
 #[cfg(target_arch = "x86_64")]
-pub fn x86_64_measure_tick_counter_frequency(measure_duration: &Duration) -> u64 {
+pub fn x86_64_measure_frequency(measure_duration: &Duration) -> u64 {
     use std::thread;
-    let counter_start = tick_counter_start();
+    let counter_start = start();
     thread::sleep(*measure_duration);
-    let counter_stop = tick_counter_stop();
+    let counter_stop = stop();
     (((counter_stop - counter_start) as f64) / measure_duration.as_secs_f64()) as u64
 }
 
 /// Returns a precision of tick counters in nanoseconds
-pub fn tick_counter_precision_nanoseconds(frequency: u64) -> f64{
+pub fn precision(frequency: u64) -> f64{
     1.0e9_f64 / (frequency as f64)
+}
+
+/// Returns a current value of the tick counter to use as a staring point
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `start()`")]
+#[cfg(target_arch = "aarch64")]
+#[inline]
+pub fn tick_counter_start() -> u64 {
+    start()
+}
+
+/// Returns a current value of the tick counter to use as a stopping point
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `stop()`")]
+#[cfg(target_arch = "aarch64")]
+#[inline]
+pub fn tick_counter_stop() -> u64 {
+    stop()
+}
+
+/// Returns a frequency of tick counter in hertz (Hz).
+/// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
+/// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `frequency()`")]
+#[cfg(target_arch = "aarch64")]
+#[inline]
+pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase) {
+    frequency()
+}
+
+/// Returns a frequency of tick counter in hertz (Hz).
+/// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
+/// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `frequency()`")]
+#[cfg(target_arch = "x86_64")]
+pub fn tick_counter_frequency() -> (u64, TickCounterFrequencyBase)  {
+    frequency()
+}
+
+/// Returns a tick counter and CPUID values based on Intel CPU's `RDTSCP` instruction
+/// 
+/// This function is an aternative to Rust's core functions:
+/// * `core::arch::x86::_rdtscp()`
+/// * `core::arch::x86_64::_rdtscp()`
+#[deprecated(since = "0.3.4", note = "The function name is long and includes a crate name. Please use `x86_64_processor_id()`")]
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+#[inline]
+pub fn x86_64_tick_counter_processor_id() -> (u64, u32) {
+    x86_64_processor_id()
+}
+
+/// Returns a current value of the tick counter to use as a staring point
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `start()`")]
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn tick_counter_start() -> u64 {
+    start()
+}
+
+/// Returns a current value of the tick counter to use as a stopping point
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `stop()`")]
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn tick_counter_stop() -> u64 {
+    stop()
+}
+
+/// Returns a measured value of tick counter frequency on `x86_64` architecture in hertz (Hz).
+/// 
+/// # Arguments
+///
+/// * `measure_duration` - A reference to `Duration` value 
+#[deprecated(since = "0.3.4", note = "The function name is long and includes a crate name. Please use `x86_64_measure_frequency()`")]
+#[cfg(target_arch = "x86_64")]
+pub fn x86_64_measure_tick_counter_frequency(measure_duration: &Duration) -> u64 {
+    x86_64_measure_frequency(measure_duration)
+}
+
+/// Returns a precision of tick counters in nanoseconds
+#[deprecated(since = "0.3.4", note = "The function name is long and prefixed with a crate name. Please use `precision()`")]
+pub fn tick_counter_precision_nanoseconds(frequency: u64) -> f64{
+    precision(frequency)
 }
 
 #[cfg(test)]
@@ -174,9 +252,9 @@ mod tests {
     #[test]
     fn basic_usage() {
         use std::{thread, time};
-        let start = tick_counter_start();
+        let start = start();
         thread::sleep(time::Duration::from_millis(20));
-        let elapsed_ticks = tick_counter_stop() - start;
+        let elapsed_ticks = stop() - start;
         assert!(elapsed_ticks > 0);
     }
 
@@ -185,9 +263,9 @@ mod tests {
     fn test_aarch64_tick_counter() {
         use std::{thread, time};
 
-        let counter_start = tick_counter_start();
+        let counter_start = start();
         thread::sleep(time::Duration::from_millis(1));
-        let counter_stop = tick_counter_stop();
+        let counter_stop = stop();
         println!(
             "counter_start: {}. counter_end: {}",
             counter_start, counter_stop
@@ -207,8 +285,8 @@ mod tests {
         assert!(counter1 < counter2);
         assert!(diff_tick_counter > 0);
 
-        let counter_start = tick_counter_start();
-        let counter_stop = tick_counter_stop();
+        let counter_start = start();
+        let counter_stop = stop();
         let diff_tick_counter2 = counter_stop - counter_start;
         assert!(counter_start < counter_stop);
         assert!(diff_tick_counter2 > 0);
@@ -232,8 +310,8 @@ mod tests {
         assert!(diff_tick_rdtscp > 0);
         assert!(cpu_core_id_1 == cpu_core_id_2);
 
-        let (counter7, cpu_core_id_3) = x86_64_tick_counter_processor_id();
-        let (counter8, cpu_core_id_4) = x86_64_tick_counter_processor_id();
+        let (counter7, cpu_core_id_3) = x86_64_processor_id();
+        let (counter8, cpu_core_id_4) = x86_64_processor_id();
         let diff_tick_asm_rdtscp = counter8 - counter7;
 
         assert!(counter7 < counter8);
@@ -245,7 +323,7 @@ mod tests {
     #[test]
     #[cfg(target_arch = "x86_64")]
     fn test_x86_64_counter_frequency() {
-        let (counter_frequency, frequency_base) = tick_counter_frequency();
+        let (counter_frequency, frequency_base) = frequency();
         assert!(counter_frequency > 0);
         let estimated_duration = match frequency_base {
             TickCounterFrequencyBase::Hardware => None,
@@ -257,7 +335,7 @@ mod tests {
     #[test]
     #[cfg(target_arch = "aarch64")]
     fn test_aarch64_counter_frequency() {
-        let (counter_frequency, frequency_base) = tick_counter_frequency();
+        let (counter_frequency, frequency_base) = frequency();
         assert!(counter_frequency > 0);
         match frequency_base   {
             TickCounterFrequencyBase::Hardware => (),
@@ -269,7 +347,7 @@ mod tests {
     #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
     fn test_counter_accuracy() {
         let counter_frequency = 24_000_000;
-        let counter_accuracy = tick_counter_precision_nanoseconds(counter_frequency);
+        let counter_accuracy = precision(counter_frequency);
         assert_eq!((counter_accuracy as u64), 41);
     }
 }
