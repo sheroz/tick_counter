@@ -26,7 +26,7 @@ For usage samples please look at [src/bin/sample.rs](src/bin/sample.rs)
     println!("Number of elapsed ticks: {}", elapsed_ticks);
 
 ### Sample usage
-
+```rust
     use std::{thread, time, env::consts};
 
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
@@ -54,7 +54,7 @@ For usage samples please look at [src/bin/sample.rs](src/bin/sample.rs)
 
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
-
+```
 ### Outputs
 
 #### 1. Macbook Pro 16 2021 / Apple Silicon
