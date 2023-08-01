@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.0 (2023-08-02)
+
+### Breaking Change
+
+- removed the deprecated function tick_counter_start()
+- removed the deprecated function tick_counter_stop()
+- removed the deprecated function tick_counter_frequency()
+- removed the deprecated function tick_counter_precision_nanoseconds()
+- removed the deprecated function x86_64_tick_counter_processor_id()
+- removed the deprecated function x86_64_measure_tick_counter_frequency()
+
 ## 0.3.4 (2023-08-02)
 
 ### Added
