@@ -11,8 +11,10 @@ AArch64: reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation
 
 ## Tested on platforms
 
-    x86_64 (Intel® Core™ i7)
-    AArch64 (Apple M1 Pro)
+```text
+x86_64 (Intel® Core™ i7)
+AArch64 (Apple M1 Pro)
+```
 
 ## Usage
 
@@ -20,71 +22,79 @@ For usage samples please look at [src/bin/sample.rs](src/bin/sample.rs)
 
 ### Basic usage
 
-    let start = tick_counter::start();
-    // ... lines of code to benchmark
-    let elapsed_ticks = tick_counter::stop() - start;
-    println!("Number of elapsed ticks: {}", elapsed_ticks);
+```rust
+let start = tick_counter::start();
+// ... lines of code to benchmark
+let elapsed_ticks = tick_counter::stop() - start;
+println!("Number of elapsed ticks: {}", elapsed_ticks);
+```
 
 ### Sample usage
+
 ```rust
-    use std::{thread, time, env::consts};
+use std::{thread, time, env::consts};
 
-    println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
+println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
-    let (counter_frequency, accuracy) = tick_counter::frequency();
-    println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
-    let estimation_source = match accuracy {
-        tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
-        tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
-    };
-    println!("Tick frequency is provided by: {}", estimation_source);
+let (counter_frequency, accuracy) = tick_counter::frequency();
+println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
+let estimation_source = match accuracy {
+    tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
+    tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
+};
+println!("Tick frequency is provided by: {}", estimation_source);
 
-    let counter_accuracy = tick_counter::precision(counter_frequency);
-    println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
+let counter_accuracy = tick_counter::precision(counter_frequency);
+println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
 
-    let counter_start = tick_counter::start();
-    thread::sleep(time::Duration::from_secs(1));
-    let counter_stop = tick_counter::stop();
+let counter_start = tick_counter::start();
+thread::sleep(time::Duration::from_secs(1));
+let counter_stop = tick_counter::stop();
 
-    println!("Tick counter start: {}", counter_start);
-    println!("Tick counter stop: {}", counter_stop);
-    
-    let elapsed_ticks = counter_stop - counter_start;
-    println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
+println!("Tick counter start: {}", counter_start);
+println!("Tick counter stop: {}", counter_stop);
 
-    let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
-    println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
+let elapsed_ticks = counter_stop - counter_start;
+println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
+
+let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
+println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
 ```
+
 ### Outputs
 
 #### 1. Macbook Pro 16 2021 / Apple Silicon
 
-    Apple M1 Pro
-    MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
+```text
+Apple M1 Pro
+MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
 
-    Output:
+Output:
 
-    Environment: macos/unix aarch64
-    Tick frequency, MHZ: 24
-    Tick frequency is provided by: hardware
-    Tick accuracy, nanoseconds: 41.666666666666664
-    Tick counter start: 48031196281005
-    Tick counter stop: 48031220402058
-    Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
-    Elapsed nanoseconds according to elapsed ticks: 1005043875
+Environment: macos/unix aarch64
+Tick frequency, MHZ: 24
+Tick frequency is provided by: hardware
+Tick accuracy, nanoseconds: 41.666666666666664
+Tick counter start: 48031196281005
+Tick counter stop: 48031220402058
+Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
+Elapsed nanoseconds according to elapsed ticks: 1005043875
+```
 
 #### 2. Ubuntu 22.04 LTS / Intel® Core™ i7
 
-    Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
-    Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
+```text
+Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
 
-    Output:
+Output:
 
-    Environment: linux/unix x86_64
-    Tick frequency, MHZ: 3430.481526
-    Tick frequency is provided by: software, estimated in 1s
-    Tick accuracy, nanoseconds: 0.29150426621478326
-    Tick counter start: 9639567570396
-    Tick counter stop: 9642998073707
-    Elapsed ticks count in ~1 seconds thread::sleep(): 3430503311
-    Elapsed nanoseconds according to elapsed ticks: 1000006350.4204394
+Environment: linux/unix x86_64
+Tick frequency, MHZ: 3430.481526
+Tick frequency is provided by: software, estimated in 1s
+Tick accuracy, nanoseconds: 0.29150426621478326
+Tick counter start: 9639567570396
+Tick counter stop: 9642998073707
+Elapsed ticks count in ~1 seconds thread::sleep(): 3430503311
+Elapsed nanoseconds according to elapsed ticks: 1000006350.4204394
+```
