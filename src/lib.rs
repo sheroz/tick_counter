@@ -4,14 +4,16 @@
 //! 
 //! ## Basic usage
 //! 
-//!     let start = tick_counter::start();
-//!     // ... lines of code to benchmark
-//!     let elapsed_ticks = tick_counter::stop() - start;
-//!     println!("Number of elapsed ticks: {}", elapsed_ticks);
+//!```
+//! let start = tick_counter::start();
+//! // ... lines of code to benchmark
+//! let elapsed_ticks = tick_counter::stop() - start;
+//! println!("Number of elapsed ticks: {}", elapsed_ticks);
+//!```
 
 use std::{time::Duration, arch::asm};
 
-/// Enum for determining the base of the privided counter frequency
+/// The origin of the provided counter frequency
 pub enum TickCounterFrequencyBase {
     /// Frequency is provided by hardware
     Hardware,
@@ -48,7 +50,7 @@ pub fn stop() -> u64 {
     aarch64_tick_counter()
 }
 
-/// Returns a frequency of tick counter in hertz (Hz).
+/// Returns a frequency of tick counter in hertz (Hz)
 /// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
 /// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
 #[cfg(target_arch = "aarch64")]
@@ -64,7 +66,7 @@ pub fn frequency() -> (u64, TickCounterFrequencyBase) {
     (counter_frequency, TickCounterFrequencyBase::Hardware)
 }
 
-/// Returns a frequency of tick counter in hertz (Hz).
+/// Returns a frequency of tick counter in hertz (Hz)
 /// * Returns a hardware-provided value of tick counter frequency on `aarch64` architecture.
 /// * Returns a software-measured value of tick counter frequency on `x86_64` architecture measured in 1 second.
 #[cfg(target_arch = "x86_64")]
@@ -146,7 +148,7 @@ pub fn stop() -> u64 {
     rax
 }
 
-/// Returns a measured value of tick counter frequency on `x86_64` architecture in hertz (Hz).
+/// Returns a measured value of tick counter frequency on `x86_64` architecture in hertz (Hz)
 /// 
 /// # Arguments
 ///
