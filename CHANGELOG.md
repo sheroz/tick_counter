@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.1 (2023-08-05)
+
+### Updated
+
+- updated documentation
+
 ## 0.4.0 (2023-08-02)
 
 ### Breaking Change
