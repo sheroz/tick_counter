@@ -1,35 +1,41 @@
-use std::{thread, time, env::consts};
+use std::thread;
+use std::time::{self, Instant, Duration};
+use std::env::consts;
 
 fn main() {
-    println!("Basic usage:");
     basic_usage(); 
-
-    println!("Basic usage with helper:");
     basic_usage_with_helper(); 
-
-    println!("Extended usage:");
     extended_usage();
+    compare_with_time_instant();
 }
 
 fn basic_usage() {
+    println!("Basic usage:");
     let duration = time::Duration::from_secs(1); 
     let start = tick_counter::start();
     thread::sleep(duration);
     let elapsed_ticks = tick_counter::stop() - start;
     println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
+
+    println!("---");
 }
 
 fn basic_usage_with_helper() {
     use tick_counter::TickCounter;
 
+    println!("Basic usage with helper:");
     let duration = time::Duration::from_secs(1); 
     let tick_counter = TickCounter::current();
     thread::sleep(duration);
     let elapsed_ticks = tick_counter.elapsed();
     println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
+
+    println!("---");
 }
 
 fn extended_usage() {
+    println!("Extended usage:");
+    
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter::frequency();
@@ -40,7 +46,7 @@ fn extended_usage() {
     };
     println!("Tick frequency is provided by: {}", estimation_source);
 
-    let counter_accuracy = tick_counter::precision(counter_frequency);
+    let counter_accuracy = tick_counter::precision_nanoseconds(counter_frequency);
     println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
 
     let counter_start = tick_counter::start();
@@ -55,6 +61,55 @@ fn extended_usage() {
 
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
+
+    println!("---");
+}
+
+fn calculate_statistics (samples: &[f64]) {
+    let mean = samples.iter().sum::<f64>() / (samples.len() as f64);
+    let min = samples.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+    let max = samples.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+    println!("  Mean = {:.2}", mean);
+    println!("  Min  = {:.2}", min);
+    println!("  Max  = {:.2}", max);
+
+    let deviation = f64::sqrt(samples.iter().map(|v| {
+        let diff = mean - *v;
+        diff * diff
+    }).sum::<f64>() / samples.len() as f64);
+    println!("  Standard deviation = {:.2} ({:.2} %)", deviation, 100.0 * deviation / mean);
+}
+
+fn compare_with_time_instant() {
+    const SAMPLES_COUNT: usize = 100;
+
+    println!("Comparing the measurement methods using {} samples:", SAMPLES_COUNT);
+
+    let mut samples = Vec::<f64>::with_capacity(SAMPLES_COUNT);
+
+    println!("Elapsed time in nanoseconds, using std::time::Instant");
+    for _ in 0..SAMPLES_COUNT {
+        let time = Instant::now();
+        let elapsed_time = time.elapsed();
+        samples.push(elapsed_time.as_nanos() as f64);
+    }
+    calculate_statistics(&mut samples);
+
+    println!("-");
+
+    samples.clear();
+    println!("Elapsed time in nanoseconds, using tick_counter");
+    let (counter_frequency,_) = tick_counter::frequency();
+    let counter_precision = tick_counter::precision_nanoseconds(counter_frequency);
+    for _ in 0..SAMPLES_COUNT {
+        let counter_start = tick_counter::start();
+        let elapsed_ticks = tick_counter::stop() - counter_start + 1;
+        let elapsed_time = counter_precision * elapsed_ticks as f64;
+        samples.push(elapsed_time.round());
+    }
+    calculate_statistics(&mut samples);
+
+    println!("---");
 }
 
 #[cfg(test)]
@@ -78,5 +133,10 @@ mod tests {
     #[test]
     fn extended_usage_test() {
         extended_usage();
+    }
+
+    #[test]
+    fn compare_with_time_instant_test() {
+        compare_with_time_instant();
     }
 }

@@ -78,34 +78,80 @@ println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanosecon
 
 ```text
 Apple M1 Pro
-MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
+MacOS Ventura 13.5.1, Darwin Kernel Version 22.6.0
+```
 
-Output:
+Output
 
+```text
+Basic usage:
+Number of elapsed ticks in 1s: 24121038
+---
+Basic usage with helper:
+Number of elapsed ticks in 1s: 24121312
+---
+Extended usage:
 Environment: macos/unix aarch64
 Tick frequency, MHZ: 24
 Tick frequency is provided by: hardware
 Tick accuracy, nanoseconds: 41.666666666666664
-Tick counter start: 48031196281005
-Tick counter stop: 48031220402058
-Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
-Elapsed nanoseconds according to elapsed ticks: 1005043875
+Tick counter start: 60960038220
+Tick counter stop: 60984160104
+Elapsed ticks count in ~1 seconds thread::sleep(): 24121884
+Elapsed nanoseconds according to elapsed ticks: 1005078500
+---
+Comparing the measurement methods using 100 samples:
+Elapsed time in nanoseconds, using std::time::Instant
+  Mean = 59.58
+  Min  = 41.00
+  Max  = 167.00
+  Standard deviation = 23.79 (39.93 %)
+-
+Elapsed time in nanoseconds, using tick_counter
+  Mean = 42.41
+  Min  = 42.00
+  Max  = 83.00
+  Standard deviation = 4.08 (9.62 %)
+---
 ```
 
 #### 2. Ubuntu 22.04 LTS / Intel® Core™ i7
 
 ```text
 Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
-Linux 5.19.0-46-generic #47~22.04.1-Ubuntu
+Linux 6.2.0-31-generic #31~22.04.1-Ubuntu
+```
 
-Output:
+Output
 
+```text
+Basic usage:
+Number of elapsed ticks in 1s: 3430495113
+---
+Basic usage with helper:
+Number of elapsed ticks in 1s: 3430495231
+---
+Extended usage:
 Environment: linux/unix x86_64
-Tick frequency, MHZ: 3430.481526
+Tick frequency, MHZ: 3430.494694
 Tick frequency is provided by: software, estimated in 1s
-Tick accuracy, nanoseconds: 0.29150426621478326
-Tick counter start: 9639567570396
-Tick counter stop: 9642998073707
-Elapsed ticks count in ~1 seconds thread::sleep(): 3430503311
-Elapsed nanoseconds according to elapsed ticks: 1000006350.4204394
+Tick accuracy, nanoseconds: 0.29150314727173865
+Tick counter start: 53632533092006
+Tick counter stop: 53635963587302
+Elapsed ticks count in ~1 seconds thread::sleep(): 3430495296
+Elapsed nanoseconds according to elapsed ticks: 1000000175.4848946
+---
+Comparing the measurement methods using 100 samples:
+Elapsed time in nanoseconds, using std::time::Instant
+  Mean = 46.01
+  Min  = 39.00
+  Max  = 418.00
+  Standard deviation = 37.46 (81.42 %)
+-
+Elapsed time in nanoseconds, using tick_counter
+  Mean = 16.52
+  Min  = 15.00
+  Max  = 17.00
+  Standard deviation = 0.85 (5.17 %)
+---
 ```

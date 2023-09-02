@@ -190,7 +190,7 @@ pub fn x86_64_measure_frequency(measure_duration: &Duration) -> u64 {
 }
 
 /// Returns a precision of tick counters in nanoseconds
-pub fn precision(frequency: u64) -> f64{
+pub fn precision_nanoseconds(frequency: u64) -> f64{
     1.0e9_f64 / (frequency as f64)
 }
 
@@ -305,7 +305,7 @@ mod tests {
     #[cfg(any(target_arch = "aarch64", target_arch = "x86_64"))]
     fn test_counter_accuracy() {
         let counter_frequency = 24_000_000;
-        let counter_accuracy = precision(counter_frequency);
+        let counter_accuracy = precision_nanoseconds(counter_frequency);
         assert_eq!((counter_accuracy as u64), 41);
     }
 }
