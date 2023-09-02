@@ -48,7 +48,7 @@ use std::{thread, time, env::consts};
 println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
 let (counter_frequency, accuracy) = tick_counter::frequency();
-println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
+println!("Tick frequency, MHZ: {:.2}", counter_frequency as f64 / 1e6_f64);
 let estimation_source = match accuracy {
     tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
     tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
@@ -56,7 +56,7 @@ let estimation_source = match accuracy {
 println!("Tick frequency is provided by: {}", estimation_source);
 
 let counter_accuracy = tick_counter::precision(counter_frequency);
-println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
+println!("Tick accuracy, nanoseconds: {:.2}", counter_accuracy);
 
 let counter_start = tick_counter::start();
 thread::sleep(time::Duration::from_secs(1));
@@ -69,7 +69,7 @@ let elapsed_ticks = counter_stop - counter_start;
 println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
 
 let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
-println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
+println!("Elapsed nanoseconds according to elapsed ticks: {:.2}", elapsed_nanoseconds);
 ```
 
 ### Outputs
