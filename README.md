@@ -78,18 +78,41 @@ println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanosecon
 
 ```text
 Apple M1 Pro
-MacOS Ventura 13.4, Darwin Kernel Version 22.5.0
+MacOS Ventura 13.5.1, Darwin Kernel Version 22.6.0
+```
 
-Output:
+Output
 
+```text
+Basic usage:
+Number of elapsed ticks in 1s: 24121038
+---
+Basic usage with helper:
+Number of elapsed ticks in 1s: 24121312
+---
+Extended usage:
 Environment: macos/unix aarch64
 Tick frequency, MHZ: 24
 Tick frequency is provided by: hardware
 Tick accuracy, nanoseconds: 41.666666666666664
-Tick counter start: 48031196281005
-Tick counter stop: 48031220402058
-Elapsed ticks count in ~1 seconds thread::sleep(): 24121053
-Elapsed nanoseconds according to elapsed ticks: 1005043875
+Tick counter start: 60960038220
+Tick counter stop: 60984160104
+Elapsed ticks count in ~1 seconds thread::sleep(): 24121884
+Elapsed nanoseconds according to elapsed ticks: 1005078500
+---
+Comparing the measurement methods using 100 samples:
+Elapsed time in nanoseconds, using std::time::Instant
+  Mean = 59.58
+  Min  = 41.00
+  Max  = 167.00
+  Standard deviation = 23.79 (39.93 %)
+-
+Elapsed time in nanoseconds, using tick_counter
+  Mean = 42.41
+  Min  = 42.00
+  Max  = 83.00
+  Standard deviation = 4.08 (9.62 %)
+---
 ```
 
 #### 2. Ubuntu 22.04 LTS / Intel® Core™ i7

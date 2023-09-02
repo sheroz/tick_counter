@@ -1,5 +1,5 @@
 use std::thread;
-use std::time::{self, Instant};
+use std::time::{self, Instant, Duration};
 use std::env::consts;
 
 fn main() {
@@ -103,7 +103,7 @@ fn compare_with_time_instant() {
     let counter_precision = tick_counter::precision_nanoseconds(counter_frequency);
     for _ in 0..SAMPLES_COUNT {
         let counter_start = tick_counter::start();
-        let elapsed_ticks = tick_counter::stop() - counter_start;
+        let elapsed_ticks = tick_counter::stop() - counter_start + 1;
         let elapsed_time = counter_precision * elapsed_ticks as f64;
         samples.push(elapsed_time.round());
     }

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.3 (2023-09-02)
+
+### Added
+
+- added statistics calculation to compare results
+
+### Updated
+
+- updated documentation
+
 ## 0.4.2 (2023-09-02)
 
 ### Added
