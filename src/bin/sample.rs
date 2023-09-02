@@ -1,22 +1,35 @@
 use std::{thread, time, env::consts};
 
 fn main() {
-    println!("Output of basic usage:");
+    println!("Basic usage:");
     basic_usage(); 
 
-    println!("Output of sample usage:");
-    sample_usage();
+    println!("Basic usage with helper:");
+    basic_usage_with_helper(); 
+
+    println!("Extended usage:");
+    extended_usage();
 }
 
 fn basic_usage() {
-    let duration = time::Duration::from_millis(20); 
+    let duration = time::Duration::from_secs(1); 
     let start = tick_counter::start();
     thread::sleep(duration);
     let elapsed_ticks = tick_counter::stop() - start;
     println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
 }
 
-fn sample_usage() {
+fn basic_usage_with_helper() {
+    use tick_counter::TickCounter;
+
+    let duration = time::Duration::from_secs(1); 
+    let tick_counter = TickCounter::current();
+    thread::sleep(duration);
+    let elapsed_ticks = tick_counter.elapsed();
+    println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
+}
+
+fn extended_usage() {
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter::frequency();
@@ -46,18 +59,24 @@ fn sample_usage() {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     #[test]
-    fn test_main() {
-        super::main();
+    fn main_test() {
+        main();
     }
 
     #[test]
-    fn basic_usage() {
-        super::basic_usage();
+    fn basic_usage_test() {
+        basic_usage();
     }
 
     #[test]
-    fn sample_usage() {
-        super::sample_usage();
+    fn basic_usage_with_helper_test() {
+        basic_usage_with_helper();
+    }
+
+    #[test]
+    fn extended_usage_test() {
+        extended_usage();
     }
 }

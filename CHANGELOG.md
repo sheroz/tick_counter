@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.2 (2023-09-02)
+
+### Added
+
+- added TickCounter helper for easy usage
+
+### Updated
+
+- updated documentation
+
 ## 0.4.1 (2023-08-05)
 
 ### Updated

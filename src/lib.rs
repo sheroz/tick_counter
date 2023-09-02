@@ -2,12 +2,23 @@
 //! * `x86_64`  - executes [RDTSC](https://www.intel.com/content/dam/www/public/us/en/documents/white-papers/ia-32-ia-64-benchmark-code-execution-paper.pdf) CPU instruction to read the time-stamp counter.
 //! * `AArch64` - reads value of the [CNTVCT_EL0](https://developer.arm.com/documentation/ddi0595/2021-12/AArch64-Registers/CNTVCT-EL0--Counter-timer-Virtual-Count-register) counter-timer register.
 //! 
-//! ## Basic usage
+//! ## Basic usage 
 //! 
 //!```
 //! let start = tick_counter::start();
 //! // ... lines of code to benchmark
 //! let elapsed_ticks = tick_counter::stop() - start;
+//! println!("Number of elapsed ticks: {}", elapsed_ticks);
+//!```
+//! 
+//! ## Basic usage with helper
+//! 
+//!```
+//! use tick_counter::TickCounter;
+//! 
+//! let tick_counter = TickCounter::current();
+//! // ... lines of code to benchmark
+//! let elapsed_ticks = tick_counter.elapsed();
 //! println!("Number of elapsed ticks: {}", elapsed_ticks);
 //!```
 
@@ -20,6 +31,22 @@ pub enum TickCounterFrequencyBase {
 
     /// Frequency is measured by counting number of ticks in `Duration` of time
     Measured(Duration)
+}
+
+/// TickCounter helper
+pub struct TickCounter {
+    start: u64
+} 
+impl TickCounter {
+    /// Returns a new `TickCounter` initialized with the current tick counter value
+    pub fn current() -> Self {
+        TickCounter { start: start() }
+    }
+
+    /// Returns the count of elapsed ticks since the `TickCounter` initialization
+    pub fn elapsed(&self) -> u64 {
+        stop() - self.start
+    }
 }
 
 /// Returns a current value of tick counter on `aarch64` architecture
@@ -177,6 +204,15 @@ mod tests {
         let start = start();
         thread::sleep(time::Duration::from_millis(20));
         let elapsed_ticks = stop() - start;
+        assert!(elapsed_ticks > 0);
+    }
+
+    #[test]
+    fn basic_usage_with_helper() {
+        use std::{thread, time};
+        let tick_counter = TickCounter::current();
+        thread::sleep(time::Duration::from_millis(20));
+        let elapsed_ticks = tick_counter.elapsed();
         assert!(elapsed_ticks > 0);
     }
 
