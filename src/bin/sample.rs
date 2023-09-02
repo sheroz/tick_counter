@@ -1,4 +1,6 @@
-use std::{thread, time::{self, Instant}, env::consts};
+use std::thread;
+use std::time::{self, Instant};
+use std::env::consts;
 
 fn main() {
     basic_usage(); 
@@ -63,27 +65,49 @@ fn extended_usage() {
     println!("---");
 }
 
-fn compare_with_time_instant() {
-    println!("Comparing the measurement results:");
+fn calculate_statistics (samples: &[f64]) {
+    let mean = samples.iter().sum::<f64>() / (samples.len() as f64);
+    let min = samples.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+    let max = samples.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+    println!("  Mean = {:.2}", mean);
+    println!("  Min  = {:.2}", min);
+    println!("  Max  = {:.2}", max);
 
-    println!("Measurement results using 'std::time::Instant'");
-    for _ in 0..10 {
+    let deviation = f64::sqrt(samples.iter().map(|v| {
+        let diff = mean - *v;
+        diff * diff
+    }).sum::<f64>() / samples.len() as f64);
+    println!("  Standard deviation = {:.2} ({:.2} %)", deviation, 100.0 * deviation / mean);
+}
+
+fn compare_with_time_instant() {
+    const SAMPLES_COUNT: usize = 100;
+
+    println!("Comparing the measurement methods using {} samples:", SAMPLES_COUNT);
+
+    let mut samples = Vec::<f64>::with_capacity(SAMPLES_COUNT);
+
+    println!("Elapsed time in nanoseconds, using std::time::Instant");
+    for _ in 0..SAMPLES_COUNT {
         let time = Instant::now();
         let elapsed_time = time.elapsed();
-        println!("Elapsed time {:?}", elapsed_time);
+        samples.push(elapsed_time.as_nanos() as f64);
     }
+    calculate_statistics(&mut samples);
 
     println!("-");
 
-    println!("Measurement results using 'tick_counter'");
+    samples.clear();
+    println!("Elapsed time in nanoseconds, using tick_counter");
     let (counter_frequency,_) = tick_counter::frequency();
     let counter_precision = tick_counter::precision_nanoseconds(counter_frequency);
-    for _ in 0..10 {
+    for _ in 0..SAMPLES_COUNT {
         let counter_start = tick_counter::start();
         let elapsed_ticks = tick_counter::stop() - counter_start;
         let elapsed_time = counter_precision * elapsed_ticks as f64;
-        println!("Elapsed ticks: {}, elapsed time, {:.2} ns", elapsed_ticks, elapsed_time);
+        samples.push(elapsed_time.round());
     }
+    calculate_statistics(&mut samples);
 
     println!("---");
 }
