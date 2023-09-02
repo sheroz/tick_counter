@@ -29,7 +29,18 @@ let elapsed_ticks = tick_counter::stop() - start;
 println!("Number of elapsed ticks: {}", elapsed_ticks);
 ```
 
-### Sample usage
+### Basic usage with helper
+
+```rust
+use tick_counter::TickCounter;
+ 
+let tick_counter = TickCounter::current();
+// ... lines of code to benchmark
+let elapsed_ticks = tick_counter.elapsed();
+println!("Number of elapsed ticks: {}", elapsed_ticks);
+```
+
+### Extended usage
 
 ```rust
 use std::{thread, time, env::consts};
