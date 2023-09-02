@@ -1,5 +1,5 @@
 use std::thread;
-use std::time::{self, Instant, Duration};
+use std::time::{self, Instant};
 use std::env::consts;
 
 fn main() {
