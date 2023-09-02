@@ -4,8 +4,11 @@ use std::env::consts;
 
 fn main() {
     basic_usage(); 
+    println!();
     basic_usage_with_helper(); 
+    println!();
     extended_usage();
+    println!();
     compare_with_time_instant();
 }
 
@@ -16,8 +19,6 @@ fn basic_usage() {
     thread::sleep(duration);
     let elapsed_ticks = tick_counter::stop() - start;
     println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
-
-    println!("---");
 }
 
 fn basic_usage_with_helper() {
@@ -29,8 +30,6 @@ fn basic_usage_with_helper() {
     thread::sleep(duration);
     let elapsed_ticks = tick_counter.elapsed();
     println!("Number of elapsed ticks in {:?}: {}", duration, elapsed_ticks);
-
-    println!("---");
 }
 
 fn extended_usage() {
@@ -39,7 +38,7 @@ fn extended_usage() {
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter::frequency();
-    println!("Tick frequency, MHZ: {}", counter_frequency as f64 / 1e6_f64);
+    println!("Tick frequency, MHZ: {:.2}", counter_frequency as f64 / 1e6_f64);
     let estimation_source = match accuracy {
         tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
         tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
@@ -47,7 +46,7 @@ fn extended_usage() {
     println!("Tick frequency is provided by: {}", estimation_source);
 
     let counter_accuracy = tick_counter::precision_nanoseconds(counter_frequency);
-    println!("Tick accuracy, nanoseconds: {}", counter_accuracy);
+    println!("Tick accuracy, nanoseconds: {:.2}", counter_accuracy);
 
     let counter_start = tick_counter::start();
     thread::sleep(time::Duration::from_secs(1));
@@ -60,9 +59,7 @@ fn extended_usage() {
     println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
 
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
-    println!("Elapsed nanoseconds according to elapsed ticks: {}", elapsed_nanoseconds);
-
-    println!("---");
+    println!("Elapsed nanoseconds according to elapsed ticks: {:.2}", elapsed_nanoseconds);
 }
 
 fn calculate_statistics (samples: &[f64]) {
@@ -95,8 +92,6 @@ fn compare_with_time_instant() {
     }
     calculate_statistics(&mut samples);
 
-    println!("-");
-
     samples.clear();
     println!("Elapsed time in nanoseconds, using tick_counter");
     let (counter_frequency,_) = tick_counter::frequency();
@@ -108,8 +103,6 @@ fn compare_with_time_instant() {
         samples.push(elapsed_time.round());
     }
     calculate_statistics(&mut samples);
-
-    println!("---");
 }
 
 #[cfg(test)]
