@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.4.4 (2023-09-03)
+
+### Updated
+
+- updated samples and documentation
+
 ## 0.4.3 (2023-09-02)
 
 ### Added
