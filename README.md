@@ -43,19 +43,16 @@ println!("Number of elapsed ticks: {}", elapsed_ticks);
 ### Extended usage
 
 ```rust
-use std::{thread, time, env::consts};
-
 println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
 let (counter_frequency, accuracy) = tick_counter::frequency();
-println!("Tick frequency, MHZ: {:.2}", counter_frequency as f64 / 1e6_f64);
-let estimation_source = match accuracy {
-    tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
-    tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
+let frequency_base = match accuracy {
+    tick_counter::TickCounterFrequencyBase::Hardware => "hardware provided".to_string(),
+    tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software estimated in {:?}", duration)
 };
-println!("Tick frequency is provided by: {}", estimation_source);
+println!("Tick frequency, MHZ: {:.2} ({})", counter_frequency as f64 / 1e6_f64, frequency_base);
 
-let counter_accuracy = tick_counter::precision(counter_frequency);
+let counter_accuracy = tick_counter::precision_nanoseconds(counter_frequency);
 println!("Tick accuracy, nanoseconds: {:.2}", counter_accuracy);
 
 let counter_start = tick_counter::start();
@@ -66,7 +63,7 @@ println!("Tick counter start: {}", counter_start);
 println!("Tick counter stop: {}", counter_stop);
 
 let elapsed_ticks = counter_stop - counter_start;
-println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
+println!("Elapsed ticks count in 1 seconds: {}", elapsed_ticks);
 
 let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
 println!("Elapsed nanoseconds according to elapsed ticks: {:.2}", elapsed_nanoseconds);
@@ -92,12 +89,11 @@ Number of elapsed ticks in 1s: 24122097
 
 Extended usage:
 Environment: macos/unix aarch64
-Tick frequency, MHZ: 24.00
-Tick frequency is provided by: hardware
+Tick frequency, MHZ: 24.00 (hardware provided)
 Tick accuracy, nanoseconds: 41.67
 Tick counter start: 103684134140
 Tick counter stop: 103708255194
-Elapsed ticks count in ~1 seconds thread::sleep(): 24121054
+Elapsed ticks count in 1 seconds: 24121054
 Elapsed nanoseconds according to elapsed ticks: 1005043916.67
 
 Comparing the measurement methods using 100 samples:
@@ -124,32 +120,29 @@ Output
 
 ```text
 Basic usage:
-Number of elapsed ticks in 1s: 3430495113
----
+Number of elapsed ticks in 1s: 3430067918
+
 Basic usage with helper:
-Number of elapsed ticks in 1s: 3430495231
----
+Number of elapsed ticks in 1s: 3430099298
+
 Extended usage:
 Environment: linux/unix x86_64
-Tick frequency, MHZ: 3430.494694
-Tick frequency is provided by: software, estimated in 1s
-Tick accuracy, nanoseconds: 0.29150314727173865
-Tick counter start: 53632533092006
-Tick counter stop: 53635963587302
-Elapsed ticks count in ~1 seconds thread::sleep(): 3430495296
-Elapsed nanoseconds according to elapsed ticks: 1000000175.4848946
----
+Tick frequency, MHZ: 3430.06 (software estimated in 1s)
+Tick accuracy, nanoseconds: 0.29
+Tick counter start: 3333113402540
+Tick counter stop: 3336543463266
+Elapsed ticks count in 1 seconds: 3430060726
+Elapsed nanoseconds according to elapsed ticks: 1000000004.66
+
 Comparing the measurement methods using 100 samples:
 Elapsed time in nanoseconds, using std::time::Instant
-  Mean = 46.01
-  Min  = 39.00
-  Max  = 418.00
-  Standard deviation = 37.46 (81.42 %)
--
+  Mean = 47.26
+  Min  = 42.00
+  Max  = 434.00
+  Standard deviation = 38.89 (82.29 %)
 Elapsed time in nanoseconds, using tick_counter
-  Mean = 16.52
+  Mean = 16.88
   Min  = 15.00
-  Max  = 17.00
-  Standard deviation = 0.85 (5.17 %)
----
+  Max  = 18.00
+  Standard deviation = 1.34 (7.92 %)
 ```

@@ -34,16 +34,14 @@ fn basic_usage_with_helper() {
 
 fn extended_usage() {
     println!("Extended usage:");
-    
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter::frequency();
-    println!("Tick frequency, MHZ: {:.2}", counter_frequency as f64 / 1e6_f64);
-    let estimation_source = match accuracy {
-        tick_counter::TickCounterFrequencyBase::Hardware => "hardware".to_string(),
-        tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software, estimated in {:?}", duration)
+    let frequency_base = match accuracy {
+        tick_counter::TickCounterFrequencyBase::Hardware => "hardware provided".to_string(),
+        tick_counter::TickCounterFrequencyBase::Measured(duration) => format!("software estimated in {:?}", duration)
     };
-    println!("Tick frequency is provided by: {}", estimation_source);
+    println!("Tick frequency, MHZ: {:.2} ({})", counter_frequency as f64 / 1e6_f64, frequency_base);
 
     let counter_accuracy = tick_counter::precision_nanoseconds(counter_frequency);
     println!("Tick accuracy, nanoseconds: {:.2}", counter_accuracy);
@@ -56,7 +54,7 @@ fn extended_usage() {
     println!("Tick counter stop: {}", counter_stop);
     
     let elapsed_ticks = counter_stop - counter_start;
-    println!("Elapsed ticks count in ~1 seconds thread::sleep(): {}", elapsed_ticks);
+    println!("Elapsed ticks count in 1 seconds: {}", elapsed_ticks);
 
     let elapsed_nanoseconds = (elapsed_ticks as f64) * counter_accuracy;
     println!("Elapsed nanoseconds according to elapsed ticks: {:.2}", elapsed_nanoseconds);
