@@ -4,16 +4,13 @@ use std::env::consts;
 
 fn main() {
     basic_usage(); 
-    println!();
     basic_usage_with_helper(); 
-    println!();
     extended_usage();
-    println!();
     compare_with_time_instant();
 }
 
 fn basic_usage() {
-    println!("Basic usage:");
+    println!("\nBasic usage:");
     let duration = time::Duration::from_secs(1); 
     let start = tick_counter::start();
     thread::sleep(duration);
@@ -24,7 +21,7 @@ fn basic_usage() {
 fn basic_usage_with_helper() {
     use tick_counter::TickCounter;
 
-    println!("Basic usage with helper:");
+    println!("\nBasic usage with helper:");
     let duration = time::Duration::from_secs(1); 
     let tick_counter = TickCounter::current();
     thread::sleep(duration);
@@ -33,7 +30,7 @@ fn basic_usage_with_helper() {
 }
 
 fn extended_usage() {
-    println!("Extended usage:");
+    println!("\nExtended usage:");
     println!("Environment: {}/{} {}", consts::OS, consts::FAMILY, consts::ARCH);
 
     let (counter_frequency, accuracy) = tick_counter::frequency();
@@ -77,8 +74,7 @@ fn calculate_statistics (samples: &[f64]) {
 
 fn compare_with_time_instant() {
     const SAMPLES_COUNT: usize = 100;
-
-    println!("Comparing the measurement methods using {} samples:", SAMPLES_COUNT);
+    println!("\nComparing results, using {} samples:", SAMPLES_COUNT);
 
     let mut samples = Vec::<f64>::with_capacity(SAMPLES_COUNT);
 
@@ -88,7 +84,7 @@ fn compare_with_time_instant() {
         let elapsed_time = time.elapsed();
         samples.push(elapsed_time.as_nanos() as f64);
     }
-    calculate_statistics(&mut samples);
+    calculate_statistics(&samples);
 
     samples.clear();
     println!("Elapsed time in nanoseconds, using tick_counter");
@@ -100,7 +96,31 @@ fn compare_with_time_instant() {
         let elapsed_time = counter_precision * elapsed_ticks as f64;
         samples.push(elapsed_time.round());
     }
-    calculate_statistics(&mut samples);
+    calculate_statistics(&samples);
+}
+
+fn _compare_with_std_arch_x86_rdtsc() {
+    const SAMPLES_COUNT: usize = 100;
+    println!("\nComparing results, using {} samples:", SAMPLES_COUNT);
+
+    let mut samples = Vec::<f64>::with_capacity(SAMPLES_COUNT);
+    println!("Elapsed ticks count, using std::arch::x86_64::_rdtsc()");
+    for _ in 0..SAMPLES_COUNT {
+        let counter_start = unsafe { std::arch::x86_64::_rdtsc() };
+        let elapsed_ticks = unsafe { std::arch::x86_64::_rdtsc() } - counter_start;
+        samples.push(elapsed_ticks as f64);
+    }
+    calculate_statistics(&samples);
+
+    samples.clear();
+
+    println!("Elapsed ticks count, using tick_counter");
+    for _ in 0..SAMPLES_COUNT {
+        let counter_start = tick_counter::start();
+        let elapsed_ticks = tick_counter::stop() - counter_start;
+        samples.push(elapsed_ticks as f64);
+    }
+    calculate_statistics(&samples);
 }
 
 #[cfg(test)]
@@ -129,5 +149,10 @@ mod tests {
     #[test]
     fn compare_with_time_instant_test() {
         compare_with_time_instant();
+    }
+
+    #[test]
+    fn compare_with_std_arch_x86_rdtsc_test() {
+        _compare_with_std_arch_x86_rdtsc()
     }
 }

@@ -120,29 +120,29 @@ Output
 
 ```text
 Basic usage:
-Number of elapsed ticks in 1s: 3430067918
+Number of elapsed ticks in 1s: 3430864159
 
 Basic usage with helper:
-Number of elapsed ticks in 1s: 3430099298
+Number of elapsed ticks in 1s: 3430866807
 
 Extended usage:
 Environment: linux/unix x86_64
-Tick frequency, MHZ: 3430.06 (software estimated in 1s)
+Tick frequency, MHZ: 3430.87 (software estimated in 1s)
 Tick accuracy, nanoseconds: 0.29
-Tick counter start: 3333113402540
-Tick counter stop: 3336543463266
-Elapsed ticks count in 1 seconds: 3430060726
-Elapsed nanoseconds according to elapsed ticks: 1000000004.66
+Tick counter start: 14959335168548
+Tick counter stop: 14962766085156
+Elapsed ticks count in 1 seconds: 3430916608
+Elapsed nanoseconds according to elapsed ticks: 1000013467.72
 
-Comparing the measurement methods using 100 samples:
+Comparing results, using 100 samples:
 Elapsed time in nanoseconds, using std::time::Instant
-  Mean = 47.26
+  Mean = 46.35
   Min  = 42.00
-  Max  = 434.00
-  Standard deviation = 38.89 (82.29 %)
+  Max  = 262.00
+  Standard deviation = 21.70 (46.82 %)
 Elapsed time in nanoseconds, using tick_counter
-  Mean = 16.88
+  Mean = 17.40
   Min  = 15.00
   Max  = 18.00
-  Standard deviation = 1.34 (7.92 %)
+  Standard deviation = 0.95 (5.45 %)
 ```
