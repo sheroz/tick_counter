@@ -147,3 +147,7 @@ Elapsed time in nanoseconds, using tick_counter
   Max  = 18.00
   Standard deviation = 0.95 (5.45 %)
 ```
+
+### Disclaimer
+
+This project was created for research purposes and is not intended for use in production systems.
