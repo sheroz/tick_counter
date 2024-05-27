@@ -148,6 +148,6 @@ Elapsed time in nanoseconds, using tick_counter
   Standard deviation = 0.95 (5.45 %)
 ```
 
-### Disclaimer
+## Disclaimer
 
 This project was created for research purposes and is not intended for use in production systems.
